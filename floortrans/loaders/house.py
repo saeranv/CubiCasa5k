@@ -380,6 +380,7 @@ class House:
                                 'up': [],
                                 'down': []}
         self.representation = {'doors': [],
+                               'windows':[],
                                'icons': [],
                                'labels': [],
                                'walls': []}
@@ -434,7 +435,7 @@ class House:
                     self.opening_corners['right'].append(point_right)
 
                     door_rep = [[list(point_left), list(point_right)], ['door', 1, 1]]
-                    self.representation['doors'].append(door_rep)
+                    self.representation['windows'].append(door_rep)
                 else:
                     up_index = np.argmin(locs[:, 1])
                     up1 = locs[up_index]
@@ -450,7 +451,7 @@ class House:
                     self.opening_corners['down'].append(point_down)
 
                     door_rep = [[list(point_up), list(point_down)], ['door', 1, 1]]
-                    self.representation['doors'].append(door_rep)
+                    self.representation['windows'].append(door_rep)
 
                 self.icons[cc, rr] = 1
                 self.icon_types.append(1)
