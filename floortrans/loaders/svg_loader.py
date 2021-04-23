@@ -24,7 +24,7 @@ class FloorplanSVG(Dataset):
         if format == 'txt':
             self.get_data = self.get_txt
         if format == 'lmdb':
-            self.lmdb = lmdb.open(data_folder+lmdb_folder, readonly=True,
+            self.lmdb = lmdb.open(data_folder + lmdb_folder, readonly=True,
                                   max_readers=8, lock=False,
                                   readahead=True, meminit=False)
             self.get_data = self.get_lmdb
@@ -43,39 +43,47 @@ class FloorplanSVG(Dataset):
 
         if self.augmentations is not None:
             sample = self.augmentations(sample)
-            
+
         if self.is_transform:
             sample = self.transform(sample)
 
         return sample
 
     def get_txt(self, index):
-        fplan = cv2.imread(self.data_folder + self.folders[index] + self.image_file_name)
-        fplan = cv2.cvtColor(fplan, cv2.COLOR_BGR2RGB)  # correct color channels
+        fplan = cv2.imread(self.data_folder +
+                           self.folders[index] + self.image_file_name)
+        # correct color channels
+        fplan = cv2.cvtColor(fplan, cv2.COLOR_BGR2RGB)
         height, width, nchannel = fplan.shape
         fplan = np.moveaxis(fplan, -1, 0)
 
         # Getting labels for segmentation and heatmaps
-        house = House(self.data_folder + self.folders[index] + self.svg_file_name, height, width)
+        house = House(self.data_folder +
+                      self.folders[index] + self.svg_file_name, height, width)
         # Combining them to one numpy tensor
-        label = torch.tensor(house.get_segmentation_tensor().astype(np.float32))
+        label = torch.tensor(
+            house.get_segmentation_tensor().astype(np.float32))
         heatmaps = house.get_heatmap_dict()
         coef_width = 1
         if self.original_size:
-            fplan = cv2.imread(self.data_folder + self.folders[index] + self.org_image_file_name)
-            fplan = cv2.cvtColor(fplan, cv2.COLOR_BGR2RGB)  # correct color channels
+            fplan = cv2.imread(self.data_folder +
+                               self.folders[index] + self.org_image_file_name)
+            # correct color channels
+            fplan = cv2.cvtColor(fplan, cv2.COLOR_BGR2RGB)
             height_org, width_org, nchannel = fplan.shape
             fplan = np.moveaxis(fplan, -1, 0)
             label = label.unsqueeze(0)
             label = torch.nn.functional.interpolate(label,
-                                                    size=(height_org, width_org),
+                                                    size=(height_org,
+                                                          width_org),
                                                     mode='nearest')
             label = label.squeeze(0)
 
             coef_height = float(height_org) / float(height)
             coef_width = float(width_org) / float(width)
             for key, value in heatmaps.items():
-                heatmaps[key] = [(int(round(x*coef_width)), int(round(y*coef_height))) for x, y in value]
+                heatmaps[key] = [
+                    (int(round(x * coef_width)), int(round(y * coef_height))) for x, y in value]
 
         img = torch.tensor(fplan.astype(np.float32))
 

@@ -137,6 +137,7 @@ dependencies:
     - pyzmq==17.1.2
     - requests==2.20.1
     - scikit-image==0.14.2
+    - scikit-learn==0.24.1
     - scipy==1.1.0
     - send2trash==1.5.0
     - shapely==1.6.4.post2
@@ -147,6 +148,7 @@ dependencies:
     - tensorboardx==1.6
     - terminado==0.8.1
     - testpath==0.4.2
+    - threadpoolctl==2.1.0
     - toolz==0.9.0
     - torch==1.0.0
     - torchfile==0.1.0
